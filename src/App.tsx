@@ -10,8 +10,8 @@ const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardPage />} />
+        <Route index element={<Navigate to="/home" replace />} />
+        <Route path="home" element={<DashboardPage />} />
         <Route path="kpi/:kpiId" element={<KpiDetailPage />} />
         <Route path="issue-analysis" element={<IssueAnalysisPage />} />
       </Route>
