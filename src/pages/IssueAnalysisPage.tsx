@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, AlertCircle, Info, Send } from 'lucide-react';
+
 import { useAnalyzeIssue } from '../hooks/useAnalyzeIssue';
 import { kpiDefinitions, KpiDefinition } from '../constants/kpi';
 import { AnalysisPayload, RootCause } from '../api/kpi';
-import { ArrowLeft, AlertCircle, Info, Send } from 'lucide-react';
+import AlertSection from '../components/dashboard/AlertSection';
 
 const IssueAnalysisPage: React.FC = () => {
+  const [error, setError] = useState<string | null>(null);
+
   const [issueDescription, setIssueDescription] = useState<string>('');
   const [recommendedKpis, setRecommendedKpis] = useState<KpiDefinition[]>([]);
   const [selectedKpis, setSelectedKpis] = useState<string[]>([]);
-  const kpiDataInput = ''; // TODO: This is a placeholder. Implement UI and state logic if needed.
+  const kpiDataInput = 'KPI 데이터 입력'; // TODO: This is a placeholder. Implement UI and state logic if needed.
 
   const mutation = useAnalyzeIssue();
 
@@ -38,15 +42,16 @@ const IssueAnalysisPage: React.FC = () => {
   };
 
   const handleAnalyze = () => {
+    if (error) setError(null);
     if (!issueDescription || selectedKpis.length === 0) {
-      console.error('이슈 설명과 관련 KPI를 선택해주세요.');
+      setError('이슈 설명과 관련 KPI를 선택해주세요.');
       return;
     }
 
     const payload: AnalysisPayload = {
-      issue_description: issueDescription,
+      issueDescription,
       selectedKpis,
-      kpi_data_input: kpiDataInput,
+      kpiDataInput,
       context: {
         industry: '자동차 부품 제조업',
         product_line: '엔진 부품',
@@ -58,6 +63,12 @@ const IssueAnalysisPage: React.FC = () => {
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
+      {error && (
+        <div className="mb-4">
+          <AlertSection alerts={[{ id: 1, message: error }]} />
+        </div>
+      )}
+
       <Link
         to="/"
         className="mb-6 flex items-center text-blue-600 hover:underline font-medium"
@@ -83,7 +94,7 @@ const IssueAnalysisPage: React.FC = () => {
           placeholder="예: 최근 3주간 생산 라인 불량률이 5%에서 15%로 급증했습니다."
           value={issueDescription}
           onChange={(e) => setIssueDescription(e.target.value)}
-        ></textarea>
+        />
       </div>
 
       {recommendedKpis.length > 0 && (
@@ -119,9 +130,10 @@ const IssueAnalysisPage: React.FC = () => {
 
       <div className="flex justify-center mb-6">
         <button
+          type="button"
           onClick={handleAnalyze}
           disabled={mutation.isPending}
-          className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
         >
           {mutation.isPending ? (
             <span className="flex items-center">
@@ -138,12 +150,12 @@ const IssueAnalysisPage: React.FC = () => {
                   r="10"
                   stroke="currentColor"
                   strokeWidth="4"
-                ></circle>
+                />
                 <path
                   className="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
+                />
               </svg>
               분석 중...
             </span>
@@ -161,9 +173,9 @@ const IssueAnalysisPage: React.FC = () => {
           <h3 className="text-xl font-bold text-blue-800 mb-4">
             분석 결과: 근본 원인
           </h3>
-          {mutation.data.root_causes.map((rc: RootCause, index: number) => (
+          {mutation.data.rootCauses.map((rc: RootCause) => (
             <div
-              key={index}
+              key={rc.id}
               className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-100"
             >
               <h4 className="text-lg font-semibold text-gray-900 mb-2">
@@ -184,8 +196,8 @@ const IssueAnalysisPage: React.FC = () => {
                 <div className="mt-3">
                   <p className="font-medium text-gray-800 mb-1">제안 조치:</p>
                   <ul className="list-disc list-inside text-sm text-gray-700">
-                    {rc.suggested_actions.map((action: string, i: number) => (
-                      <li key={i}>{action}</li>
+                    {rc.suggested_actions.map((action: string) => (
+                      <li key={`${rc.id}-${action}`}>{action}</li>
                     ))}
                   </ul>
                 </div>

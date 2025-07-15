@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+
 import { KpiTrend } from '../api/kpi';
 
 interface KPITrendIndicatorProps {

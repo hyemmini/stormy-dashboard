@@ -1,4 +1,5 @@
 import React from 'react';
+
 import KPIIcon from '../common/KPIIcon';
 import KPIStatusIndicator from '../common/KPIStatusIndicator';
 import KPITrendIndicator from '../common/KPITrendIndicator';
@@ -28,6 +29,15 @@ const KPICard = ({ kpi, onClick }: KPICardProps) => {
     <div
       className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between border border-gray-100 hover:shadow-xl transition-shadow duration-200 cursor-pointer"
       onClick={() => onClick(kpi)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick(kpi);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`KPI 카드: ${kpi.name}`}
     >
       <div>
         <div className="flex items-center justify-between mb-3">
@@ -52,7 +62,7 @@ const KPICard = ({ kpi, onClick }: KPICardProps) => {
           <span className="mr-1">추이:</span>
           <KPITrendIndicator trend={kpi.trend} />
         </span>
-        <button className="text-blue-600 hover:underline text-sm">
+        <button type="button" className="text-blue-600 hover:underline text-sm">
           상세 보기
         </button>
       </div>

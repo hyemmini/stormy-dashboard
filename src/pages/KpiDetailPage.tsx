@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import { useKpi } from '../hooks/useKpi';
 import {
   LineChart,
   Line,
@@ -11,6 +10,8 @@ import {
   Legend,
 } from 'recharts';
 import { ArrowLeft } from 'lucide-react';
+
+import { useKpi } from '../hooks/useKpi';
 import KPIIcon from '../components/KPIIcon';
 import KPIStatusIndicator from '../components/KPIStatusIndicator';
 import KPITrendIndicator from '../components/KPITrendIndicator';

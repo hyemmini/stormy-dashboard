@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node"
+  },
+  "include": [
+    "src",
+    ".eslintrc.cjs",
+    "postcss.config.js",
+    "postcss.config.cjs"
+  ]
+}

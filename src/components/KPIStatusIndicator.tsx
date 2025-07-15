@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle, AlertCircle, Info } from 'lucide-react';
+
 import { KpiStatus } from '../api/kpi';
 
 interface KPIStatusIndicatorProps {

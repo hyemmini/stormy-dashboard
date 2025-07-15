@@ -1,9 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+
+import { KpiData } from '../api/kpi';
+
 import KPIIcon from './KPIIcon';
 import KPIStatusIndicator from './KPIStatusIndicator';
 import KPITrendIndicator from './KPITrendIndicator';
-import { KpiData } from '../api/kpi';
 
 interface KPICardProps {
   kpi: KpiData;

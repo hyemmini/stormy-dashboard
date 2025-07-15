@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { Settings, Target, AlertCircle } from 'lucide-react';
+
 import { useKpis } from '../hooks/useKpis';
 import KPICard from '../components/KPICard';
-import { Settings, Target, AlertCircle } from 'lucide-react';
 import { KpiData } from '../api/kpi';
 
 interface Alert {

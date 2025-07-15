@@ -9,6 +9,7 @@ import {
   Users,
   Info,
 } from 'lucide-react';
+
 import { KpiCategory } from '../constants/kpi';
 
 interface KPIIconProps {

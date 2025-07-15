@@ -1,4 +1,5 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
+
 import { fetchKpiById, KpiData } from '../api/kpi';
 
 /**

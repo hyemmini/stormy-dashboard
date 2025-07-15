@@ -1,6 +1,4 @@
 import React from 'react';
-import KPIStatusIndicator from '../common/KPIStatusIndicator';
-import KPITrendIndicator from '../common/KPITrendIndicator';
 import {
   LineChart,
   Line,
@@ -10,6 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+
+import KPIStatusIndicator from '../common/KPIStatusIndicator';
+import KPITrendIndicator from '../common/KPITrendIndicator';
 
 type KpiStatus = 'on-track' | 'at-risk' | 'off-track';
 type KpiTrend = 'up' | 'down';
@@ -39,7 +40,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ kpi, onBack }) => {
 
   return (
     <div className="p-4 sm:p-6">
-      <button onClick={onBack} className="mb-4 text-blue-600 hover:underline">
+      <button
+        type="button"
+        onClick={onBack}
+        className="mb-4 text-blue-600 hover:underline"
+      >
         &larr; 뒤로가기
       </button>
       <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">

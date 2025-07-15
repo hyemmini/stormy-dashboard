@@ -1,7 +1,5 @@
 import { kpiDefinitions, KpiDefinition } from '../constants/kpi';
 
-// --- Type Definitions ---
-
 export type KpiStatus = 'Normal' | 'Warning' | 'Critical';
 export type KpiTrend = 'up' | 'down' | 'stable';
 
@@ -18,13 +16,14 @@ export interface KpiData extends KpiDefinition {
 }
 
 export interface AnalysisPayload {
-  issue_description: string;
+  issueDescription: string;
   selectedKpis: string[];
-  kpi_data_input?: string;
-  context?: Record<string, any>;
+  kpiDataInput?: string;
+  context?: Record<string, unknown>;
 }
 
 export interface RootCause {
+  id: string;
   description: string;
   confidence_score: number;
   evidence_kpis: string[];
@@ -33,8 +32,8 @@ export interface RootCause {
 }
 
 export interface AnalysisResult {
-  issue_description: string;
-  root_causes: RootCause[];
+  issueDescription: string;
+  rootCauses: RootCause[];
 }
 
 // --- Helper Functions (Internal to this mock API) ---
@@ -155,7 +154,9 @@ const getKpiTrend = (history: KpiHistoryPoint[], kpiId: string): KpiTrend => {
 // --- Exported API Functions ---
 
 const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 
 let kpiCache: KpiData[] | null = null;
 
@@ -188,25 +189,19 @@ export const fetchAllKpis = async (): Promise<KpiData[]> => {
   return generateAllKpiData();
 };
 
-export const fetchKpiById = (kpiId: string): Promise<KpiData> => {
-  console.log(`Fetching KPI with ID: ${kpiId}`);
-  return new Promise((resolve, reject) => {
+export const fetchKpiById = (
+  kpiId: string,
+  options?: { onLog?: (msg: string, data?: unknown) => void },
+): Promise<KpiData> => {
+  const history = generateMockHistory(kpiId);
+  if (options?.onLog) options.onLog(`Fetching KPI with ID: ${kpiId}`);
+  return new Promise((resolve) => {
     setTimeout(
       () => {
         const definition = kpiDefinitions.find((d) => d.id === kpiId);
 
         if (!definition) {
-          console.error(`KPI with ID ${kpiId} not found.`);
-          reject(new Error(`KPI with ID ${kpiId} not found`));
-          return;
-        }
-
-        const history = generateMockHistory(kpiId);
-        if (history.length === 0) {
-          reject(
-            new Error(`Could not generate history for KPI with ID ${kpiId}`),
-          );
-          return;
+          throw new Error(`KPI with ID ${kpiId} not found.`);
         }
 
         const currentValue = history[history.length - 1].value;
@@ -221,7 +216,8 @@ export const fetchKpiById = (kpiId: string): Promise<KpiData> => {
           history,
         };
 
-        console.log(`Successfully fetched KPI data for ${kpiId}:`, kpiData);
+        if (options?.onLog)
+          options.onLog(`Successfully fetched KPI data for ${kpiId}:`, kpiData);
         resolve(kpiData);
       },
       500 + Math.random() * 500,
@@ -234,10 +230,11 @@ export const analyzeIssue = async (
 ): Promise<AnalysisResult> => {
   await sleep(2000);
 
-  const { issue_description, selectedKpis } = payload;
+  const { issueDescription, selectedKpis } = payload;
 
-  const root_causes: RootCause[] = [
+  const rootCauses: RootCause[] = [
     {
+      id: 'rc-1',
       description: '최근 도입된 신규 설비의 초기 안정화 문제',
       confidence_score: 0.75,
       evidence_kpis: selectedKpis.filter((kpi) =>
@@ -251,8 +248,9 @@ export const analyzeIssue = async (
       ],
     },
     {
-      description: '작업자 교대에 따른 숙련도 차이',
-      confidence_score: 0.55,
+      id: 'rc-2',
+      description: '작업자 교대 후 불량률 증가',
+      confidence_score: 0.65,
       evidence_kpis: selectedKpis.filter((kpi) =>
         ['defectRate', 'OLE'].includes(kpi),
       ),
@@ -265,5 +263,5 @@ export const analyzeIssue = async (
     },
   ];
 
-  return { issue_description, root_causes };
+  return { issueDescription, rootCauses };
 };

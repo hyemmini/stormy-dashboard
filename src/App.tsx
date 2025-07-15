@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+
 import Layout from './components/Layout';
 import DashboardPage from './pages/DashboardPage';
 import KpiDetailPage from './pages/KpiDetailPage';

@@ -22,6 +22,7 @@ const PeriodFilter: React.FC<PeriodFilterProps> = ({
       <div className="flex items-center bg-gray-100 rounded-lg p-1">
         {PERIODS.map((period) => (
           <button
+            type="button"
             key={period.value}
             onClick={() => onChange(period.value as Period)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 ${

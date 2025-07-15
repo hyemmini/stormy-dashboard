@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Info, AlertCircle, Send, ArrowLeft, Loader2 } from 'lucide-react';
+
 import kpiDefinitions from '../../data/kpiDefinitions';
+
+import AlertSection from '../dashboard/AlertSection';
 
 interface KpiDefinition {
   id: string;
@@ -10,15 +13,15 @@ interface KpiDefinition {
 
 interface RootCause {
   description: string;
-  confidence_score: number;
-  evidence_kpis: string[];
+  confidenceScore: number;
+  evidenceKpis: string[];
   reasoning: string;
 }
 
 interface AnalysisResult {
-  analysis_id: string;
+  analysisId: string;
   status: 'success' | 'failure';
-  root_causes: RootCause[];
+  rootCauses: RootCause[];
   timestamp: string;
 }
 
@@ -27,6 +30,7 @@ interface IssueInputScreenProps {
 }
 
 const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
+  const [error, setError] = useState<string | null>(null);
   const [issueDescription, setIssueDescription] = useState('');
   const [recommendedKpis, setRecommendedKpis] = useState<string[]>([]);
   const [selectedKpis, setSelectedKpis] = useState<string[]>([]);
@@ -60,8 +64,9 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
   };
 
   const handleAnalyze = async () => {
+    if (error) setError(null);
     if (!issueDescription || selectedKpis.length === 0) {
-      alert('이슈 설명과 관련 KPI를 선택해주세요.');
+      setError('이슈 설명과 관련 KPI를 선택해주세요.');
       return;
     }
     setIsLoading(true);
@@ -70,13 +75,13 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
     setTimeout(() => {
       setIsLoading(false);
       setAnalysisResult({
-        analysis_id: 'mock_rc_001',
+        analysisId: 'mock_rc_001',
         status: 'success',
-        root_causes: [
+        rootCauses: [
           {
             description: '설비 노후화로 인한 성능 저하',
-            confidence_score: 0.85,
-            evidence_kpis: ['OEE', 'defectRate'],
+            confidenceScore: 0.85,
+            evidenceKpis: ['OEE', 'defectRate'],
             reasoning:
               'OEE 감소 및 불량률 증가 패턴이 설비 성능 저하와 일치합니다.',
           },
@@ -88,7 +93,13 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
 
   return (
     <div className="p-4 sm:p-6">
+      {error && (
+        <div className="mb-4">
+          <AlertSection alerts={[{ id: 1, message: error }]} />
+        </div>
+      )}
       <button
+        type="button"
         onClick={onBack}
         className="mb-6 flex items-center text-blue-600 hover:underline font-medium"
       >
@@ -131,6 +142,7 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
                   <div className="flex flex-wrap gap-2">
                     {recommendedKpis.map((kpiId) => (
                       <button
+                        type="button"
                         key={`rec-${kpiId}`}
                         onClick={() => handleKpiSelect(kpiId)}
                         className={`px-2 py-1 text-xs rounded-full ${selectedKpis.includes(kpiId) ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-800'}`}
@@ -144,6 +156,7 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
               <div className="flex flex-wrap gap-2">
                 {kpiDefinitions.map((kpi) => (
                   <button
+                    type="button"
                     key={kpi.id}
                     onClick={() => handleKpiSelect(kpi.id)}
                     className={`px-3 py-1.5 text-sm rounded-md ${selectedKpis.includes(kpi.id) ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-800'}`}
@@ -157,6 +170,7 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
 
           <div className="text-center">
             <button
+              type="button"
               onClick={handleAnalyze}
               disabled={isLoading}
               className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
@@ -174,19 +188,16 @@ const IssueInputScreen: React.FC<IssueInputScreenProps> = ({ onBack }) => {
         {analysisResult && (
           <div className="mt-8 p-4 bg-green-50 rounded-lg">
             <h3 className="text-lg font-bold text-green-800 mb-3">분석 결과</h3>
-            {analysisResult.root_causes.map((cause, index) => (
-              <div
-                key={index}
-                className="mb-2 p-3 bg-white rounded-md shadow-sm"
-              >
+            {analysisResult.rootCauses.map((cause) => (
+              <div className="mb-2 p-3 bg-white rounded-md shadow-sm">
                 <p className="font-semibold text-gray-800">
                   - {cause.description}
                 </p>
                 <p className="text-sm text-gray-600">
-                  신뢰도: {(cause.confidence_score * 100).toFixed(0)}%
+                  신뢰도: {(cause.confidenceScore * 100).toFixed(0)}%
                 </p>
                 <p className="text-sm text-gray-600">
-                  근거 KPI: {cause.evidence_kpis.join(', ')}
+                  근거 KPI: {cause.evidenceKpis.join(', ')}
                 </p>
               </div>
             ))}
