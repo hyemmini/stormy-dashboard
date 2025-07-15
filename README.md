@@ -1,6 +1,7 @@
 # 🌊 Stormy Dashboard
 
-![🌊 Stormy CI](https://github.com/hmjjang93/stormy-dashboard/actions/workflows/ci.yml/badge.svg)
+![🌊 Stormy CI]
+https://hyemmini.github.io/stormy-dashboard/
 
 ## 제조 KPI 및 이슈 추적/분석을 위한 실시간 대시보드 프로젝트입니다.
 
