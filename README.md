@@ -17,7 +17,7 @@ https://hyemmini.github.io/stormy-dashboard/
 
 ## 🛠️ 개발 환경
 
-- **Node.js 18+**
+- **Node.js 20+**
 - **Vite**
 - **React 18 + TypeScript**
 - **Tailwind CSS**
